@@ -15,5 +15,18 @@ namespace Auth_WebApi_04.Entity
 
         [Required]
         public required string Email { get; set; }
+
+        public EnumUserType Role { get; set; } = EnumUserType.Guest;
+
+        public  string? RefreshToken { get; set; } = string.Empty;
+
+        public  DateTime? RefreshTokenExpire { get; set; } 
+    }
+
+    public enum EnumUserType 
+    {
+        Guest = 1,
+        User,
+        Admin
     }
 }

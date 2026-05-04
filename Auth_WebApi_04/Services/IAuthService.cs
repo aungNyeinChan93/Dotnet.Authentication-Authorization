@@ -5,7 +5,8 @@ namespace Auth_WebApi_04.Services
 {
     public interface IAuthService
     {
-        Task<string?> LoginAsync(UserDto userDto);
+        Task<TokenResponeModel?> LoginAsync(UserDto userDto);
+        Task<TokenResponeModel?> RefreshTokenAsync(UserDto userDto);
         Task<User?> RegisterAsync(UserDto userDto);
     }
 }

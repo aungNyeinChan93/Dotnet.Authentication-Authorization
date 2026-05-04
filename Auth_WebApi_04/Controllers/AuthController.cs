@@ -1,4 +1,5 @@
-﻿using Auth_WebApi_04.Models;
+﻿using Auth_WebApi_04.Entity;
+using Auth_WebApi_04.Models;
 using Auth_WebApi_04.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,13 +34,13 @@ namespace Auth_WebApi_04.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]UserDto userDto)
         {
-            var token = await _authService.LoginAsync(userDto);
-            if (token is null)
+            var result = await _authService.LoginAsync(userDto);
+            if (result is null)
             {
                 return BadRequest();
             }
 
-            return Ok(token);
+            return Ok(result);
         }
 
         [HttpGet("isAuth")]
@@ -47,6 +48,26 @@ namespace Auth_WebApi_04.Controllers
         public async Task<IActionResult> IsAuthenticate()
         {
             return Ok("You are Authenticate!");
+        }
+
+        [Authorize(Roles ="Admin")]
+        [HttpGet("isAdmin")]
+        public async Task<IActionResult> IsAdmin()
+        {
+            return Ok("YOu are admin!");
+        }
+
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody]UserDto user)
+        {
+            var result = await _authService.RefreshTokenAsync(user);
+            if (result is null || result.RefreshToken == null || result.AccessToken == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(result);
         }
     }
 }
