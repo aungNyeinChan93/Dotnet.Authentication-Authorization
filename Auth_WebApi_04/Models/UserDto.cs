@@ -1,0 +1,11 @@
+﻿namespace Auth_WebApi_04.Models
+{
+    public class UserDto
+    {
+
+        //public int UserId { get; set; }
+        public required string Name { get; set; }
+        public required string Password { get; set; }
+        public required string Email { get; set; }
+    }
+}
