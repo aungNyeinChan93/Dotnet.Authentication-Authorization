@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="Authentication&amp;Authorization.WebApi_01/Authentication&amp;Authorization.WebApi_01.csproj" />
+  <Project Path="Auth_WebApi_02/Auth_WebApi_02.csproj" Id="36171ac2-d1e0-4db7-9e47-4e93712f43ba" />
+  <Project Path="Auth_WebApi_03/Auth_WebApi_03.csproj" Id="0017ae5d-cbee-4de6-885b-9d7ba67e5218" />
 </Solution>
