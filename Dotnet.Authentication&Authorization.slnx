@@ -5,4 +5,5 @@
   <Project Path="Auth_WebApi_04/Auth_WebApi_04.csproj" Id="3a8681ff-57b7-430b-b82d-250a5ef4b029" />
   <Project Path="Identity_01/Identity_01.csproj" Id="377daf68-ad03-452e-aa4c-a5c44ec212eb" />
   <Project Path="Identity_02/Identity_02.csproj" Id="98a93a76-bc0d-4208-b777-9743046f0ee4" />
+  <Project Path="Identity_03/Identity_03.csproj" Id="b219b33d-cd91-4cd4-b345-1db949630353" />
 </Solution>
