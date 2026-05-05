@@ -2,9 +2,9 @@
 using Identity_03.Entity;
 using Identity_03.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 
@@ -51,9 +51,7 @@ namespace Identity_03.Services
             return accessToken is not null ? new TokenResponseModel { AccessToken = accessToken} : default!;
         }
 
-
-
-        private async Task<string?> GenerateAccessToken(AppUser appUser)
+        private async Task<string?> GenerateAccessToken(AppUser appUser, IOptions<AppSettings>? appSettings = null)
         {
             try
             {
@@ -64,6 +62,7 @@ namespace Identity_03.Services
 
                 var key = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:JWT_SECRET")!));
+                //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Value.JWT_SECRET!));
 
                 var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
