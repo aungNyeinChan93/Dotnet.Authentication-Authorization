@@ -9,6 +9,9 @@ namespace Identity_03.Entity
         [PersonalData]
         [Column(TypeName ="nvarchar(255)")]
         public string FullName { get; set; } = string.Empty;
+
+        [PersonalData]
+        public int? LibraryId { get; set; }  
     }
 }
 

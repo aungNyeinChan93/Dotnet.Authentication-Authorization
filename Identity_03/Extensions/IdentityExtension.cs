@@ -1,6 +1,7 @@
 ﻿using Identity_03.Data;
 using Identity_03.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -11,10 +12,12 @@ namespace Identity_03.Extensions
     {
         public static IServiceCollection AddIdentityService(this IServiceCollection services ,IConfiguration configuration)
         {
-           
+            // 1
             services.AddIdentityApiEndpoints<AppUser>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>();
-
+            
+            // 2
             services.Configure<IdentityOptions>(options =>
             {
                 options.User.RequireUniqueEmail = true;
@@ -24,20 +27,35 @@ namespace Identity_03.Extensions
                 options.Password.RequireUppercase = true;
             });
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme =
-                options.DefaultChallengeScheme =
-                options.DefaultForbidScheme =
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.SaveToken = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
+            // 3
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:JWT_SECRET")!))
-                };
+                    //options.SaveToken = false;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:JWT_SECRET")!))
+                    };
+                });
+
+            // 4
+            services.AddAuthorization(options =>
+            {
+                //options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                //.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                //.RequireAuthenticatedUser()
+                //.Build();
+
+
+
+                //Add Ploicies
+                options.AddPolicy("HasLibraryId", policy =>
+                {
+                    policy.RequireClaim("libraryId");
+                });
             });
 
             return services;

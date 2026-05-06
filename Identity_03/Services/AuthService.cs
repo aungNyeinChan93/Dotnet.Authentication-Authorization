@@ -23,31 +23,44 @@ namespace Identity_03.Services
             this.configuration = configuration;
         }
 
+
+        //Register
         public async Task<AppUser?> RegisterAsync(UserRequestModel userRequestModel)
         {
             var user = new AppUser()
             {
                 UserName = userRequestModel.Name,
                 Email = userRequestModel.Email,
+                LibraryId = userRequestModel.LibraryId,
             };
 
             var result = await _userManager.CreateAsync(user,userRequestModel.Password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded) return default!;
+            
+            var res = await _userManager.AddToRoleAsync(user,userRequestModel.UserRole.ToString());
+            if (res.Succeeded)
             {
                 return user;
             }
+
             return default!;
         }
 
+
+        //Login
         public async Task<TokenResponseModel?> LoginAsync(UserLoginRequestModel requestModel)
         {
             var user =await _userManager.FindByEmailAsync(requestModel.Email);
-            if (user is null)
-            {
-                return default!;
-            }
+
+            if (user is null) return default!;
+
+            var isValidPassword = await _userManager.CheckPasswordAsync(user, requestModel.Password);
+            
+            if(!isValidPassword) return default!;
+
             var accessToken = await this.GenerateAccessToken(user);
+
             return accessToken is not null ? new TokenResponseModel { AccessToken = accessToken} : default!;
         }
 
@@ -60,6 +73,8 @@ namespace Identity_03.Services
                     return default!;
                 }
 
+                var roles =await _userManager.GetRolesAsync(appUser);
+
                 var key = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:JWT_SECRET")!));
                 //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appSettings.Value.JWT_SECRET!));
@@ -68,9 +83,17 @@ namespace Identity_03.Services
 
                 var claims = new ClaimsIdentity(new List<Claim>
                 {
+                    new Claim(ClaimTypes.NameIdentifier ,appUser.Id),
+                    new Claim(ClaimTypes.Role , roles.First()),
                     new Claim("userId",appUser.Id.ToString()),
-                    new Claim("email",appUser.Email.ToString())
+                    new Claim(ClaimTypes.Email,appUser.Email),
+                    //new Claim("email",appUser.Email),
                 });
+
+                if (appUser.LibraryId is not null)
+                {
+                    claims.AddClaim(new Claim("libraryId", appUser.LibraryId.ToString()!));
+                }
 
                 var tokenDescriptor = new SecurityTokenDescriptor()
                 {
@@ -88,7 +111,7 @@ namespace Identity_03.Services
             catch (Exception err)
             {
                 return err.Message;
-            }
+            } 
         }
     }
 }

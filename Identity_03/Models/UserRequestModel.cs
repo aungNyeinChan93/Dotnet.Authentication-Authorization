@@ -7,5 +7,7 @@ namespace Identity_03.Models
         public required string Name { get; set; }
         public required string Email { get; set; }
         public required string Password { get; set; }
+        public EnumUserRole UserRole { get; set; } = EnumUserRole.Guest;
+        public int? LibraryId { get; set; }
     }
 }
